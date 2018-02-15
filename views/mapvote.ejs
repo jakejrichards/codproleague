@@ -1,0 +1,162 @@
+<% include ./includes/header %>
+            
+            <div class="container mapvote">
+                <div class="row teams">
+                    <div class="col-lg-6 green">
+                        <div class="team-top-container">
+                            <div class="col-lg-4 team-name">
+                                <h2>Green Team</h2>
+                            </div>
+                            <div class="col-lg-2 col-lg-offset-6 team-name">
+                                <h3>500<img src="/img/League%20Points.png"></h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 team">
+                            <% players.forEach(function(player){ %>
+                            <% if(player.team === "green") { %>
+                                <div class="player <%= player.rank %>">
+                                    <div class="avatar">
+                                        
+                                    </div>
+                                    <p class="username"><%= player.username %></p>
+                                </div>
+                            <% } %>
+                            <% }); %>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 black">
+                        <div class="team-top-container">
+                            <div class="col-lg-4 team-name">
+                                <h2>Black Team</h2>
+                            </div>
+                            <div class="col-lg-2 col-lg-offset-6 team-name">
+                                <h3>500<img src="/img/League%20Points.png"></h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 team">
+                            <% players.forEach(function(player){ %>
+                                <% if(player.team === "black") { %>
+                                    <div class="player r<%= player.rank.substr(-1); %> <%= player.rank %>">
+                                        <div class="avatar">
+                                            <span class="rank">V</span>
+                                        </div>
+                                        <p class="username"><%= player.username %></p>
+                                    </div>
+                                <% } %>
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mid">
+                    <div class="col-lg-9 gamemode">
+                        <h3>Gamemode</h3>
+                        <h1><i class="fa fa-bomb"></i>Search & Destroy</h1>
+                    </div>
+                    <div class="col-lg-3 timer">
+                        <h3>Match Starts In</h3>
+                        <h1><img src="/img/timer.png"><span id="timer">15</span></h1>
+                    </div>
+                </div>
+                <div class="row maps">
+                    <h3>vote for a map</h3>
+                    <div class="map-container" id="backlot">
+                        <div class="map">
+                            <div class="map-name">
+                                <p>Backlot</p>
+                            </div>
+                            <div class="map-count">
+                                <p>3</p>
+                            </div>
+                        </div>
+                    </div><!--
+                    --><div class="map-container" id="crash">
+                        <div class="map">
+                            <div class="map-name">
+                                <p>Crash</p>
+                            </div>
+                            <div class="map-count">
+                                <p>3</p>
+                            </div>
+                        </div>
+                    </div><!--
+                    --><div class="map-container" id="crossfire">
+                        <div class="map selected">
+                            <div class="map-name">
+                                <p>Crossfire</p>
+                            </div>
+                            <div class="map-count">
+                                <p>3</p>
+                            </div>
+                        </div>
+                    </div><!--
+                    --><div class="map-container" id="random">
+                        <div class="map">
+                            <i class="fa fa-question"></i>
+                            <div class="map-name">
+                                <p>Random</p>
+                            </div>
+                            <div class="map-count">
+                                <p>3</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class='col-lg-12'>
+                    <div class="box promo"></div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="footer">
+                <form id="matchstart" method='POST'></form>
+                
+            </div>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+            <script src="/js/socket.io.js" type="text/javascript"></script>
+            <script src="/js/main.js" type="text/javascript"></script>
+            <script type='text/javascript'>
+            $(document).ready(function(){
+                var socket = io();
+                var time = <%= time %>;
+                var match = <%= matchID %>;
+                var now = Date.now();
+                var timeNow = Math.floor(now/1000);
+                var timeleft = time - timeNow + 15;
+                $('#timer').html(timeleft);
+                setInterval(function(){
+                    timeleft--;
+                    if(timeleft <= 0){
+                        timeleft = 0;
+                    }                    
+                    $('#timer').html(timeleft);
+                    
+                },1000); 
+                
+                $('.map').click(function() {
+                    if($(this).hasClass('selected')) {
+                        //DO NOTHING
+                    } else {
+                        $('.map').removeClass('selected');
+                        $(this).addClass('selected');
+                    }
+                });
+
+                socket.on("match_start", function(data){
+                    var mID = data.matchID;
+                    mID = parseInt(mID);
+                    matchID = parseInt(match);
+                    if(mID === matchID){
+                        var action = '/match/' + matchID;
+                        $('#matchstart').attr('action', action);
+                        $('#matchstart').submit();
+                    }
+                });
+                
+            });
+            </script>
+
+
+    </body>
+    
+</html>

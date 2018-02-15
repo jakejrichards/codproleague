@@ -1,0 +1,85 @@
+<% include ./includes/header %>
+            <div class="container content">
+                <div class="row leaderboard">
+                    <% include ./includes/alert-top %>
+                    <div class="col-lg-12">
+                        <table class="table">
+                        <tr>
+                                <th>#</th>
+                                <th>Rank</th>
+                                <th>Username</th>
+                                <th>Ladder Points</th>
+                                <th>Date Joined</th>
+                                <th>Status</th>
+                        </tr>
+                        <% var index = 1; leaderboard.forEach(function(row){ %>
+
+                        <% if(typeof user == 'object' && user && user.userID === row.userID) { %>
+                            <tr class="currentUser" onclick="userProfile('/user/<%= row.username %>');">
+                        <% } else { %>
+                            <tr onclick="userProfile('/user/<%= row.username %>');">
+                        <% } %>
+                                <td><%= row.num %></td>
+                                <td><img src="/img/ranks/<%= row.rank %>.png"/><%= row.rank %></td>
+                                <td><%= row.username %></td>
+                                <td><%= row.LDR %></td>
+                                <td>
+                                <% 
+                                var d = new Date(row.join_date); 
+                                var day = d.getDate();
+                                var month = d.getMonth() + 1;
+                                var year = d.getFullYear();
+                                %>
+                                <%= month %>/<%= day %>/<%= year %>
+                                </td>
+                                <td><%= row.status %></td>
+                            </tr>
+                        <% index++; }); %>
+                        </table>
+                    </div>
+                </div>
+                <div class="leaderboard-controls row">
+                    <div class="col-lg-4 col-lg-offset-8">
+                        <button id="first" class="btn btn-default">First</button>
+                        <button id="prev" class="btn btn-primary">Previous</button>
+                        <button id="next" class="btn btn-success">Next</button>
+                        <button id="end" class="btn btn-warning">End</button>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="footer">
+                
+            </div>
+
+            <% include ./includes/javascriptlinks %>
+            <script src="js/main.js" type="text/javascript"></script>
+            <script type="text/javascript">
+            function userProfile(profileLink){
+                window.location = profileLink;
+            }
+
+            $(document).ready(function(){
+                var page = <%= page %>;
+
+                $('#first').click(function(){
+                    if(page != 1) {
+                        window.location = '/leaderboard';
+                    }
+                });
+                $('#prev').click(function(){
+                    if(page != 1) {
+                        window.location = '/leaderboard?page=' + (page - 1);
+                    } 
+                });
+                $('#next').click(function(){
+                    window.location = '/leaderboard?page=' + (page + 1);
+                });
+                $('#end').click(function(){
+                    window.location = '/leaderboard?page=' + 999999;
+                });
+            });
+            </script>
+    </body>
+    
+</html>

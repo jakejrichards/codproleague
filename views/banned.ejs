@@ -1,0 +1,32 @@
+<% include ./includes/header %>
+            <div class="container signup">
+                <div class="row">
+                    <div class="col-lg-10 col-lg-offset-1">
+                        <h1 style="color: #f44336; font-size: 74px">Banned</h1>
+                        <h3 style="text-align: center;"> 
+                        <% if(unbanned != "INDEFINITE") { %>
+                            Take this time to think about what you've done. You have been banned for 1 <%= unbanned.toLowerCase() %>.
+                        <% } else { %>
+                            You have been banned indefinitely.
+                        <% } %>
+                        </h3>
+                    </div>
+                </div>
+                <br>
+                <div class="row bottom">
+                    <a href="/register">Think you've been falsely banned? Send us a support ticket.</a>
+                </div>
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2 bottom-promo-box box ">
+                        
+                    </div>
+                </div>
+            </div>
+        
+            <div class="footer">
+                
+            </div>
+            <% include ./includes/javascriptlinks %>
+            <script src="js/main.js" type="text/javascript"></script>
+    </body>
+</html>

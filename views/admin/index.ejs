@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>CPL Admin</title>
+	<link href="/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/css/font-awesome.min.css" rel="stylesheet">
+	<link href="/css/datepicker3.css" rel="stylesheet">
+	<link href="/css/styles.css" rel="stylesheet">
+	
+	<!--Custom Font-->
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+	<!--[if lt IE 9]>
+	<script src="/js/html5shiv./js"></script>
+	<script src="/js/respond.min./js"></script>
+	<![endif]-->
+</head>
+<body>
+	<nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#sidebar-collapse"><span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span></button>
+				<a class="navbar-brand" href="#"><span>CPL</span> Admin</a>
+			</div>
+		</div><!-- /.container-fluid -->
+	</nav>
+	<div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
+		<div class="profile-sidebar">
+			<div class="profile-userpic">
+				<img src="http://placehold.it/50/30a5ff/fff" class="img-responsive" alt="">
+			</div>
+			<div class="profile-usertitle">
+				<div class="profile-usertitle-name">Admin</div>
+				<div class="profile-usertitle-status"><span class="indicator label-success"></span>Online</div>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="divider"></div>
+		<ul class="nav menu">
+			<li class="active"><a href="/"><em class="fa fa-dashboard">&nbsp;</em> Dashboard</a></li>
+			<li><a href="/users"><em class="fa fa-user">&nbsp;</em> Manage Users</a></li>
+			<li><a href="/support"><em class="fa fa-support">&nbsp;</em> Support Tickets</a></li>
+			<li><a href="/reports"><em class="fa fa-flag">&nbsp;</em> Reports</a></li>
+			<li><a href="/disputes"><em class="fa fa-clone">&nbsp;</em> Dispute Center</a></li>
+			<li><a href="/logout"><em class="fa fa-power-off">&nbsp;</em> Logout</a></li>
+		</ul>
+	</div><!--/.sidebar-->
+		
+	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li><a href="#">
+					<em class="fa fa-home"></em>
+				</a></li>
+				<li class="active">Dashboard</li>
+			</ol>
+		</div><!--/.row-->
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Dashboard</h1>
+			</div>
+		</div><!--/.row-->
+
+		<div class="panel panel-container">
+			<div class="row">
+				<div class="col-xs-6 col-md-6 col-lg-6 no-padding">
+					<div class="panel panel-teal panel-widget border-right">
+						<div class="row no-padding"><em class="fa fa-xl fa-trophy color-orange"></em>
+							<div class="large">859930</div>
+							<div class="text-muted">Total LP Won</div>
+						</div>
+					</div>
+				</div>
+			</div><!--/.row-->
+		</div>
+		
+		<div class="panel panel-container">
+			<div class="row">
+				<div class="col-xs-6 col-md-3 col-lg-3 no-padding">
+					<div class="panel panel-teal panel-widget border-right">
+						<div class="row no-padding"><em class="fa fa-xl fa-gamepad color-blue"></em>
+							<div class="large"><%= matchCount %></div>
+							<div class="text-muted">Matches Played</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-6 col-md-3 col-lg-3 no-padding">
+					<div class="panel panel-blue panel-widget border-right">
+						<div class="row no-padding"><em class="fa fa-xl fa-group color-orange"></em>
+							<div class="large"><%= userCount %></div>
+							<div class="text-muted">Users Registered</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-6 col-md-3 col-lg-3 no-padding">
+					<div class="panel panel-orange panel-widget border-right">
+						<div class="row no-padding"><em class="fa fa-xl fa-users color-teal"></em>
+							<div class="large"><%= newUsers %></div>
+							<div class="text-muted">New Users</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-6 col-md-3 col-lg-3 no-padding">
+					<div class="panel panel-red panel-widget ">
+						<div class="row no-padding"><em class="fa fa-xl fa-search color-red"></em>
+							<div class="large"><%= pageviews %></div>
+							<div class="text-muted">Page Views</div>
+						</div>
+					</div>
+				</div>
+			</div><!--/.row-->
+		</div>
+		
+		<div class="row">
+			<div class="col-xs-6 col-md-4">
+				<div class="panel panel-default">
+					<div class="panel-body easypiechart-panel">
+						<h4>Open Disputes</h4>
+						<div class="large"><%= disputeCount %></div>
+						<button class="btn btn-primary">View Now</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-6 col-md-4">
+				<div class="panel panel-default">
+					<div class="panel-body easypiechart-panel">
+						<h4>Open Support Tickets</h4>
+						<div class="large">34</div>
+						<button class="btn btn-success">View Now</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-6 col-md-4">
+				<div class="panel panel-default">
+					<div class="panel-body easypiechart-panel">
+						<h4>New Reports</h4>
+						<div class="large"><%= reportsCount %></div>
+						<button class="btn btn-warning">View Now</button>
+					</div>
+				</div>
+			</div>
+		</div><!--/.row-->
+	</div>	<!--/.main-->
+	
+	<script src="/js/jquery-1.11.1.min.js"></script>
+	<script src="/js/bootstrap.min.js"></script>
+	<script src="/js/chart.min.js"></script>
+	<script src="/js/chart-data.js"></script>
+	<script src="/js/easypiechart.js"></script>
+	<script src="/js/easypiechart-data.js"></script>
+	<script src="/js/bootstrap-datepicker.js"></script>
+	<script src="/js/custom.js"></script>
+	<script>
+		window.onload = function () {
+	var chart1 = document.getElementById("line-chart").getContext("2d");
+	window.myLine = new Chart(chart1).Line(lineChartData, {
+	responsive: true,
+	scaleLineColor: "rgba(0,0,0,.2)",
+	scaleGridLineColor: "rgba(0,0,0,.05)",
+	scaleFontColor: "#c5c7cc"
+	});
+};
+	</script>
+		
+</body>
+</html>

@@ -1,0 +1,68 @@
+<% include ./includes/header %>
+            
+            <div class="container signup">
+                <div class="row">
+                    <% include ./includes/alert-top %>
+                    <div class="col-lg-8 col-lg-offset-2">
+                        <h1>Submit Dispute Proof</h1>
+                        <form class="form" action='/dispute' method="post">
+                            <div class="col-lg-10 col-lg-offset-1">
+                            <div class="col-lg-6" style="padding-left: 0">
+                            <label>Match ID:</label>
+                            <input class="form-control" type="text" name='matchID' <% if(typeof matchID !== 'undefined') { %>value="<%= matchID %>"<% } %> placeholder='1234'>
+                            </div>
+                            <div class="col-lg-6" style="padding-right: 0">
+                            <label>Match Score:</label>
+                            <input class="form-control" type="text" name='score' <% if(typeof disputeInfo !== 'undefined') { %>value="<%= disputeInfo.score %>"<% } else { %>placeholder='optional'<% } %>>
+                            </div>
+                            <label>Photo/Video Proof Link(s):</label>
+                            <% if(typeof disputeInfo !== 'undefined') { %>
+                                <% for(var i = 0; i < 5; i++) { %>
+                                    <% if(disputeInfo['proof' + (i+1)] != '') { %>
+                                    <input id='p<%= i %>' class="form-control proof" type="text" name='proof[<%= i %>]' value="<%= disputeInfo['proof' + (i+1)] %>">
+                                    <% } %>
+                                <% } %>
+                            <% } else { %>
+                            <input id='p0' class="form-control proof" type="text" name='proof[0]' placeholder="Example: use youtube, imgur, twitter, or any other photo/video hosting service">
+                            <% } %>
+                            <p style="font-style: italic; float: right; color: #ddd; margin: 0;">* Up to 5 links may be submitted</p>
+                            <button id="add-link" style="text-transform: uppercase; margin-bottom: 3rem" class='col-lg-12 btn btn-default' type="button">Add link <i class="fa fa-plus"></i></button>
+
+                            <br>
+                            <label>More Information:</label>
+                            <textarea name="moreInfo" style="margin-bottom: 1.5rem; background-color: #424242; color: #fff; border: none" rows="5" class="form-control" <% if(typeof disputeInfo === 'undefined') { %>placeholder="Let us know all the information we may need when considering your dispute. Max 250 characters."<% } %>><% if(typeof disputeInfo !== 'undefined') { %><%= disputeInfo.more_information %><% } %></textarea>
+                            
+                            <button  id='signup-button' class='col-lg-12 login-btn' type="submit">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2 bottom-promo-box box ">
+                        
+                    </div>
+                </div>
+            </div>
+        
+            <div class="footer">
+                
+            </div>
+            <% include ./includes/javascriptlinks %>
+            <script src="js/main.js" type="text/javascript"></script>
+            <script type="text/javascript">
+                $(document).ready(function(){
+                    $('#add-link').click(function(){
+                        if($('input.proof').length < 5) {
+                            var nextPID = $("input.proof:last-of-type").attr('id');
+                            nextPID = parseInt(nextPID.substring(1)) + 1;
+                            console.log(nextPID);
+                            $('<input id="p'+nextPID+'" class="form-control proof" type="text" name="proof['+nextPID+']" placeholder="Example: use youtube, imgur, twitter, or any other photo/video hosting service">').insertAfter($("input.proof:last-of-type"));
+                        } else {
+                            showAlert("error", "You may only submit up to 5 links of dispute proof!", 5000);
+                        }
+                    });
+                });
+            </script>
+    </body>
+    
+</html>

@@ -1,0 +1,15 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.slim.js" type="text/javascript"></script>
+<% if(alertMsg != '') { %>
+    <script>
+    $(document).ready(function(){
+    	<% if(alertType == 'error') { %>
+			errorSound.play();
+    	<% } else if(alertType = 'success') { %>
+    		notificationSound.play();
+    	<% } %>
+    });
+    </script>
+<% } %>

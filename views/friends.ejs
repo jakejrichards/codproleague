@@ -1,0 +1,174 @@
+<% include ./includes/header %>
+            
+            <div class="container friends">
+                <div class="row">
+                    <% include ./includes/alert-top %>
+                    <div class="col-lg-3 sent">
+                        <div style="height: 51rem" class="box sent-container">
+                            <h3>Search for players</h3>
+                            <div class="col-lg-10 " style="margin-top: .75rem;"">
+                                <input id="search-name" class="form-control" type="text" name="search-name"/>
+                            </div>
+                            <div class="col-lg-2 row" style="margin-top: .75rem; padding-left: 0; padding-right: 0; margin-bottom: .75rem">
+                                <button id="search" class="btn btn-success"><i class="fa fa-search"></i></button>
+                            </div>
+                            <ul id="search-list" class="scroll">
+                                <li id="search-title"></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-6" style="margin-top: 1.5rem">
+                        <div class="box friends-container">
+                            <h2>Friends List <span class="friends-num"><i class="fa fa-group"></i><%= Object.keys(friends).length %></span></h2>
+                            <% if(Object.keys(friends).length > 0) { %>
+                                <ul id="friend-list" class="scroll">
+                                    <% for(var key in friends) { %>
+                                        <li>
+                                            <div class="nav-avatar search-avatar" style="background-image: url(<%= friends[key].avatarURL %>); background-size: cover; background-position: center center"></div>
+                                            <a href="/user/<%= friends[key].username %>"><%= friends[key].username %></a>
+                                            
+                                            <a class="remove-friend" href="/remove_friend?userID=<%= friends[key].userID %>">
+                                                <i class="fa fa-times"></i>
+                                            </a>
+                                        </li>
+                                    <% } %>
+                                </ul>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 sent">
+                        <div class="box sent-container">
+                            <h3>Sent Friend Requests</h3>
+                            <% if(Object.keys(sentRequests).length > 0) { %>
+                                <ul id="sent-list" class="scroll">
+                                    <% for(var key in sentRequests) { %>
+                                        <li>
+                                            <div class="nav-avatar search-avatar" style="height: 2.25rem; width: 2.25rem; background-image: url(<%= sentRequests[key].avatarURL %>); background-size: cover; background-position: center center"></div>
+                                            <a href="/user/<%= sentRequests[key].username %>"><%= sentRequests[key].username %></a>
+                                            <a class="remove-friend" href="/cancel_friend_request?userID=<%= sentRequests[key].userID %>">
+                                                <i class="fa fa-times"></i>
+                                            </a>
+                                        </li>
+                                    <% } %>
+                                </ul>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="box sent-container">
+                            <h3>Received Friend Requests</h3>
+                            <% if(Object.keys(receivedRequests).length > 0) { %>
+                                <ul id="received-list" class="scroll">
+                                    <% for(var key in receivedRequests) { %>
+                                        <li>
+                                            <div class="nav-avatar search-avatar" style="height: 2.25rem; width: 2.25rem; background-image: url(<%= receivedRequests[key].avatarURL %>); background-size: cover; background-position: center center"></div>
+                                            <a href="/user/<%= receivedRequests[key].username %>"><%= receivedRequests[key].username %></a>
+                                            <a class="remove-friend" href="/decline_friend_request?userID=<%= receivedRequests[key].userID %>">
+                                                <i class="fa fa-times"></i>
+                                            </a>
+                                            <a class="accept-friend" href="/accept_friend_request?userID=<%= receivedRequests[key].userID %>">
+                                                <i class="fa fa-check"></i>
+                                            </a>
+                                        </li>
+                                    <% } %>
+                                </ul>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal confirm-modal" id="report-user">
+                <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Report <span class="reported_username">User</span></h4>
+                  </div>
+                  <div class="modal-body">
+                    <label>Reason:</label>
+                    <select id="report-type" name="type" class="form-control">
+                          <option value="Boosting">Boosting</option>
+                          <option value="False Disputing">False Disputing</option>
+                          <option value="Smurfing">Smurfing</option>
+                          <option value="Cheating">Cheating</option>
+                          <option value="Verbal Abuse">Verbal Abuse</option>
+                          <option value="Other">Other</option>
+                    </select>
+                    <br/>
+                    <label>More Details: </label>
+                    <textarea id="message" name="message" rows="3" class="form-control" placeholder="Please give us more details about why you are reporting this user."></textarea>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default modal-close" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger report-user-confirm confirm-report">Report <span class="reported_username"></span></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+        
+            <div class="footer">
+                
+            </div>
+            <% include ./includes/javascriptlinks %>
+            <script src="js/main.js" type="text/javascript"></script>
+            <script type="text/javascript">
+                $(document).ready(function(){
+
+                    $('#search-name').keyup(function(e){
+                        if(e.keyCode == 13) {
+                            $('#search').click();
+                        }
+                    });
+
+                    $('#search').click(function(){
+                        var searchName = $('#search-name').val();
+                        $('.search-result').remove();
+                        $('#search-list').append('<li style="text-align: center" class="search-result"><i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i></li>');
+                        $.post('/search', {
+                            searchName: searchName
+                        }, function(data){
+                            console.log(data);
+                            if(data.status == 'success') {
+                                $('.search-result').remove();
+                                var results = data.results;
+                                results.forEach(function(user){
+                                    $('#search-list').append('<li class="search-result"><div class="nav-avatar search-avatar" style="background-size: cover; background-position: center center; background-image: url(' + user.avatarURL + ')"></div><a href="/user/' + user.username + '"> '+ user.username+'</a></li>');
+                                });
+                            } else {
+                                $('.search-result').remove();
+                                $('#search-list').append('<li class="search-result"><a>No results found.</a></li>')
+                            }
+                        });
+                    });
+
+                    $('#report-user').modal({
+                        show: false
+                    });
+
+                    $('.report-user').click(function(){
+                        var userID = $(this).attr('userID');
+                        var username = $(this).attr('username');
+                        $('.reported_username').html(username);
+                        $('#report-user').attr('userID', userID);
+                        $('#report-user').modal('toggle');
+                    });
+
+                    $('.confirm-report').click(function(){
+                        var reportType = $('#report-type').val();
+                        var message = $('#message').val();
+                        var userID = $('#report-user').attr('userID');
+                        $.post('/report_user', {
+                            type: reportType,
+                            message: message,
+                            userID: userID
+                        }, function(data){
+                            console.log(data);
+                        });
+                        $('#report-user').modal('toggle');
+                    });
+                });
+            </script>
+    </body>
+    
+</html>

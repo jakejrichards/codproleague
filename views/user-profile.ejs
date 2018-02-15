@@ -1,0 +1,228 @@
+<% include ./includes/header %>
+            <div class="container content user-profile">
+            <div class="modal confirm-modal" id="report-user" userID="<%= profile.userID %>">
+                <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Report <span class="reported_username">User</span></h4>
+                  </div>
+                  <div class="modal-body">
+                    <label>Reason:</label>
+                    <select id="report-type" name="type" class="form-control">
+                          <option value="Boosting">Boosting</option>
+                          <option value="False Disputing">False Disputing</option>
+                          <option value="Smurfing">Smurfing</option>
+                          <option value="Cheating">Cheating</option>
+                          <option value="Verbal Abuse">Verbal Abuse</option>
+                          <option value="Other">Other</option>
+                    </select>
+                    <br/>
+                    <label>More Details: </label>
+                    <textarea id="message" name="message" rows="3" class="form-control" placeholder="Please give us more details about why you are reporting this user."></textarea>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default modal-close" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger report-user-confirm confirm-report">Report <span class="reported_username"></span></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="row">
+                <% include ./includes/alert-top %>
+                    <div class="col-lg-12">
+                        <div class="box profile-top">
+                            <h3>My Profile</h3>
+                            <div class="profile-avatar" style="background-image: url(<%= profile.avatarURL %>)"></div>
+                            <h2><%= profile.username %></h2>
+                            <img style="height: 6rem; float: left; vertical-align: middle; margin-top: 3.2rem; margin-left: .75rem" src="/img/ranks/<%= profile.rank %>.png"/>
+                            
+                            <div class="col-lg-3" id="gamertags">
+                                <div class="system-names">
+                                    <label><img src="/img/psn.svg"/></label>
+                                    <p><%= profile.psn %><br></p>
+                                </div>
+                                <div class="system-names">
+                                    <label><img src="/img/xbox.png"/></label>
+                                    <p><%= profile.xbox %><br></p>
+                                </div>
+                                <div class="add-friend">
+                                    <% if(!isFriend) { %>
+                                        <a href="/add_friend?userID=<%= profile.userID %>">
+                                            <button class="btn btn-success">Add Friend</button>
+                                        </a>
+                                    <% } %>
+                                    <button class="btn btn-danger report-user">Report User</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                <br><br>
+                <div class="col-lg-9">
+                    <div class='box showcase'>
+                        <h3>CPL Showcase</h3>
+                        <table class="table" id="showcase">
+                            <tr>
+                                <th>Highest All Time Rank</th>
+                                <th>Games Won</th>
+                                <th>LP Earnings</th>
+                                <th>Current Winstreak</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                <h3><img src="/img/ranks/<%= profile.highestRank %>.png"/></h3>
+                                </td>
+                                <td>
+                                <h3><i class="fa fa-trophy"></i> <%= profile.wins %></h3>
+                                </td>
+                                <td>
+                                <img style="height: 4rem; display: inline" src="/img/League%20Points.png"/><h3 style="display: inline; vertical-align: middle"> <%= profile.LP_earnings %></h3>
+                                </td>
+                                <td>
+                                <h3><i class="fa fa-fire"></i> <%= profile.winstreak %></h3>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="box social-media-container">
+                        <h3>Connect With <%= profile.username %></h3>
+                            <% if(
+                                profile.youtube == '/' && 
+                                profile.twitch == '/' && 
+                                profile.twitter == '/' && 
+                                profile.instagram == '/' && 
+                                profile.facebook == '/' && 
+                                profile.snapchat == '' && 
+                                profile.discord == ''
+                            ) { %>
+                            <div class="social-media-box">
+                                <p class="none">No linked social media</p>
+                            </div>
+                            <% } %>
+                            <% if(profile.youtube != '/') { %>
+                            <div class="social-media-box youtube" onclick="link('https://youtube.com<%= profile.youtube %>')">
+                                <div class="social-media">
+                                    <i class="fa fa-youtube-play"></i>
+                                    <p>Youtube</p>
+                                </div>
+                            </div>
+                            <% } %>
+                            <% if(profile.twitch != '/') { %>
+                            <div class="social-media-box twitch" onclick="link('https://twitch.tv<%= profile.twitch %>')">
+                                <div class="social-media">
+                                    <i class="fa fa-twitch"></i>
+                                    <p>Twitch</p>
+                                </div>
+                            </div>
+                            <% } %>
+                            <% if(profile.twitter != '/') { %>
+                            <div class="social-media-box twitter" onclick="link('https://twitter.com<%= profile.twitter %>')">
+                                <div class="social-media">
+                                    <i class="fa fa-twitter"></i>
+                                    <p>Twitter</p>
+                                </div>
+                            </div>
+                            <% } %>
+                            <% if(profile.instagram != '/') { %>
+                            <div class="social-media-box instagram" onclick="link('https://instagram.com<%= profile.instagram %>')">
+                                <div class="social-media">
+                                    <i class="fa fa-instagram"></i>
+                                    <p>Instagram</p>
+                                </div>
+                            </div>
+                            <% } %>
+                            <% if(profile.facebook != '/') { %>
+                            <div class="social-media-box facebook" onclick="link('https://facebook.com<%= profile.facebook %>')">
+                                <div class="social-media">
+                                    <i class="fa fa-facebook"></i>
+                                    <p>Facebook</p>
+                                </div>
+                            </div>
+                            <% } %>
+                            <% if(profile.snapchat != '') { %>
+                            <div class="social-media-box snapchat">
+                                <div class="social-media">
+                                    <i class="fa fa-snapchat-ghost"></i>
+                                    <p><%= profile.snapchat %></p>
+                                </div>
+                            </div>
+                            <% } %>
+                            <% if(profile.discord != '') { %>
+                            <div class="social-media-box discord">
+                                <div class="social-media">
+                                    <svg id="discord" style=""></svg>
+                                    <p><%= profile.discord %></p>
+                                </div>
+                            </div>
+                            <% } %>
+                    </div>
+                </div>
+                </div>
+                <br><br>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="box banner">
+                            <i class="fa fa-dollar"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="footer">
+                
+            </div>
+
+            <% include ./includes/javascriptlinks %>
+            <script src="/js/main.js" type="text/javascript"></script>
+            <script type="text/javascript">
+                $(document).ready(function(){
+                    <% if(typeof user == 'object' && user) { %>
+                        var currentUserID = <%= user.userID %>;
+                    <% } else { %>
+                        var currentUserID = 0;
+                    <% } %>
+                    
+
+                    $('#report-user').modal({
+                        show: false
+                    });
+
+                    $('.report-user').click(function(){
+                        var userID = $(this).attr('userID');
+                        if(parseInt(currentUserID) != parseInt(userID)) {
+                            var username = $(this).attr('username');
+                            $('.reported_username').html(username);
+                            $('#report-user').attr('userID', userID);
+                            $('#report-user').modal('toggle');
+                        }
+                    });
+
+                    $('.confirm-report').click(function(){
+                        var reportType = $('#report-type').val();
+                        var message = $('#message').val();
+                        var userID = $('#report-user').attr('userID');
+                        $.post('/report_user', {
+                            type: reportType,
+                            message: message,
+                            userID: userID
+                        }, function(data){
+                            if(data.status == "success") {
+                                showAlert("success", data.message, 5000);
+                            } else {
+                                showAlert("error", data.message, 5000);
+                            }
+                        });
+                        $('#report-user').modal('toggle');
+                    });
+                }); 
+            </script>
+    </body>
+    
+</html>

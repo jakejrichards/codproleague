@@ -1,0 +1,385 @@
+<% include ./includes/header %>
+            <div class="container">
+                <div class="row">
+                    <% include ./includes/alert-top %>
+                    <h1 style="text-align: center;"><img height="75" src="/img/<%= system %>.png"/> <span id="host"><%= host %></span>'s Lobby</h1>
+                    <br>
+                    <div class="col-lg-2 chat friends">
+                        <div class="box">
+                            <h3>Invite Friends</h3>
+                            <ul class="lobby-friends-list">
+                                <% friends.forEach(function(friend){ %>
+                                    <li>
+                                        <div class="lobby-friend" style="background-image: url('<%= friend.avatarURL %>'); border: 1px solid #fff"></div> 
+                                        <a href="/user/<%= friend.username %>"><%= friend.username %></a>
+                                        <a class="lobby-friend-invite" link="/send_invite?to_userID=<%= friend.userID %>&lobbyID=<%= lobbyID %>">
+                                            <i class="fa fa-paper-plane"></i>
+                                        </a>
+
+                                    </li>
+                                <% }); %>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-7 lobby" level="<% if(hostBool) { %>1<% } else if(cohostBool) { %>2<% } else { %>0<% } %>">
+                        <div class='box'>
+                            <table class="table" id='queuelist'>
+                                <tr id="queue-header">
+                                    <th>Player</th>
+                                    <th>Bet</th>
+                                    <th>Ladder Points</th>
+                                    <th></th>
+                                </tr>
+                                <% if(lobby.length > 0){ %>
+                                    <% lobby.forEach(function(player){ %>
+                                    <tr id='user_<%= player.userID %>' class="<% if(player.userID == user.userID) { %>currentUser<% } %> queue-player">
+                                    <td class="rank"><img src="/img/ranks/<%= player.rank %>.png"/><div class="lobby-avatar" style="background-image: url(<%= lobbyAvatars[player.userID] %>)"></div>
+                                        <a href="/user/<%= player.username %>"><%= player.username %></a> &nbsp;<% if(player.host == 1) { %><i class="fa fa-star host"></i><% } else if(player.host == 2) { %><i class="fa fa-star"></i> <% } %>
+                                    </td>
+                                    <td class="lp_bet"><img src="/img/League%20Points.png"/><span id="lp_bet"><%= player.bet %></span></td>
+                                    <td><%= player.LDR %></td>
+                                    <td class="options-container">
+                                        <a class="player-options dropdown-toggle <% if(!hostBool && !cohostBool || user.userID == player.userID || player.username == host) { %>hidden<% } %>" data-toggle="dropdown" data-target="" href="#">
+                                            <i class="fa fa-cogs"></i>
+                                        </a>
+                                        <ul class="player-options-list dropdown-menu" id="options_<%= player.userID %>">
+                                            <li class="kick-player <% if(!hostBool && !cohostBool) { %>hidden<% } %>">
+                                                <a onclick="kick(<%= player.userID %>);">Kick Player</a>
+                                            </li>
+                                            <li class="host <% if(!hostBool) { %>hidden<% } %>">
+                                                <a onclick="changePriveleges(<%= player.userID %>, 1);">Promote to Host</a>
+                                            </li>
+                                            <li class="co-host <% if(!hostBool) { %>hidden<% } %>">
+                                                <a onclick="changePriveleges(<%= player.userID %>, 2);"">Promote to Co-Host</a>
+                                            </li>
+                                            <li class="demote <% if(!hostBool) { %>hidden<% } %>">
+                                                <a onclick="changePriveleges(<%= player.userID %>, 0);"">Demote</a>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    </tr>
+                                    <% }); %>
+                                <% } %>
+                            </table>
+                            <p id="max-players">Max Players: &nbsp;4 <i class="fa fa-group"></i></p>
+                            <p <% if(status == '') { %>class="hidden"<% } %> id="finding-match">Finding Match <i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i></p>
+                        </div>
+                        <div class='box lobby-controls'>
+                        <% if(hostBool) { %>
+                            <a id="disband-lobby" onclick="disband();"><button class="btn btn-danger">Disband Lobby</button></a>
+                            <% if(status == '') { %>
+                                <a id="find-match" onclick="findMatch();"><button class="btn btn-success">Find Match</button></a>
+                            <% } else { %>
+                                <a id="find-match" onclick="cancel();"><button class="btn btn-default">Cancel <i class="fa fa-times"></i></button></a>
+                            <%} %>
+                            <a class="hidden" id="leave-lobby" href="/leave_lobby"><button class="btn btn-default">Leave Lobby</button></a>
+                        <% } else if(cohostBool) { %>
+                            <a class="hidden" id="disband-lobby" onclick="disband();"><button class="btn btn-danger">Disband Lobby</button></a>
+                            <% if(status == '') { %>
+                                <a id="find-match" onclick="findMatch();"><button class="btn btn-success">Find Match</button></a>
+                            <% } else { %>
+                                <a id="find-match" onclick="cancel();"><button class="btn btn-default">Cancel <i class="fa fa-times"></i></button></a>
+                            <%} %>
+                            <a id="leave-lobby" href="/leave_lobby"><button class="btn btn-default">Leave Lobby</button></a>
+                        <% } else { %>
+                            <a class="hidden" id="disband-lobby" onclick="disband();"><button class="btn btn-danger">Disband Lobby</button></a>
+                            <a class="hidden" id="find-match" onclick="findMatch();"><button class="btn btn-success">Find Match</button></a>
+                            <a id="leave-lobby" href="/leave_lobby"><button class="btn btn-default">Leave Lobby</button></a>
+                        <% } %>
+                        </div>
+                        
+                        
+                    </div>
+                    <div class="col-lg-3 chat friends">
+                        <div class='box sent-container'>
+                            <h3>Chat</h3>
+                            <div class="chat-container scroll">
+                                <ul id="chat-messages"></ul>
+                            </div>
+                            <div class="input-container">
+                                <textarea id="chat-input" class="form-control" placeholder="Enter your chat message here..."></textarea>
+                                <button id="send-chat" class="btn btn-success">Send</button>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        
+            <div class="footer">
+                
+            </div>
+            <% include ./includes/javascriptlinks %>
+            <script src="/js/main.js" type="text/javascript"></script>
+            <script type="text/javascript">
+                $(document).ready(function(){
+
+                    $('.player-options').on('click', function(e){
+                        console.log('test'); 
+                    });
+
+                    $('#chat-input').on('keyup', function(e){
+
+                    if(e.keyCode == 13){
+                            $('#send-chat').click();
+                        }
+                    });
+
+
+                    $('#send-chat').click(function(){
+                        var message = $('#chat-input').val();
+                        var userID = '<%= user.userID %>';
+                        var username = '<%= user.username %>';
+                        var avatarURL = '<%= user.avatarURL %>';
+
+                        if(message.trim().length > 0) {
+                            $.post('/lobby_chat', { 
+                                message : message, 
+                                lobbyID: '<%= lobbyID %>', 
+                                userID: userID, 
+                                username: username, 
+                                avatarURL: avatarURL 
+                            }, function(){
+                                console.log("message sent");
+                                $('#chat-input').val('');
+                            });
+                        }
+                    });
+
+                    $('.lobby-friend-invite').click(function(e){
+                        e.preventDefault();
+                        var link = $(this).attr('link');
+                        var that = this;
+                        $.get(link, function(data){
+                            console.log(data);
+                            if(data.status == "success") {
+                                //IF SUCCESSFUL
+                                $(that).children().removeClass('fa-paper-plane');
+                                $(that).children().addClass('fa-check');
+                                $(that).children().css('color', '#00c853');
+                                
+                                setTimeout(function(){
+                                    $(that).children().removeClass('fa-check');
+                                    $(that).children().addClass('fa-paper-plane');
+                                    $(that).children().css('color', '#fff');
+                                }, 3000);
+                            } else {
+                                showAlert("error", data.message, 5000);
+                            }
+                        }); 
+                    });
+                });
+
+                socket.on("disband", function(){
+                    window.location = '/';
+                });
+
+                socket.on("match-found", function(data){
+                    window.location = '/prematch/' + data.match;
+                });
+
+                socket.on("co-host", function(data){
+                    var message = data.message;
+                    var myID = <%= user.userID %>;
+                    var hostID = data.hostID;
+
+                    $('.lobby').attr('level', 2);
+
+                    $('.player-options').removeClass('hidden');
+                    $('.player-options-list li').each(function(index){
+                        if(!$(this).hasClass('kick-player')) {
+                            $(this).addClass('hidden');
+                        } else {
+                            $(this).removeClass('hidden');
+                        }
+                    });
+                    $('#user_' + myID + ' .player-options').addClass('hidden');
+                    $('#user_' + myID + ' .player-options-list li').addClass('hidden');
+                    $('#user_' + hostID + ' .player-options').addClass('hidden');
+                    $('#user_' + hostID + ' .player-options-list li').addClass('hidden');
+
+                    $('#leave-lobby').removeClass('hidden');
+                    $('#find-match').removeClass("hidden");
+                    $('#disband-lobby').addClass("hidden");
+                });
+
+                socket.on("player", function(data){
+                    var message = data.message;
+
+                    $('.lobby').attr('level', 0);
+
+                    $('.player-options').addClass('hidden');
+                    $('.player-options-list li').addClass('hidden');
+
+                    $('#leave-lobby').removeClass('hidden');
+                    $('#find-match').addClass("hidden");
+                    $('#disband-lobby').addClass("hidden");
+                });
+
+                socket.on("host", function(data){
+                    var message = data.message;
+                    var myID = <%= user.userID %>;
+
+                    $('.lobby').attr('level', 1);
+
+                    $('.player-options').removeClass('hidden');
+                    $('.player-options-list li').removeClass('hidden');
+                    $('#user_' + myID + ' .player-options').addClass('hidden');
+                    $('#user_' + myID + ' .player-options-list li').addClass('hidden');
+
+                    $('#leave-lobby').addClass('hidden');
+                    $('#find-match').removeClass("hidden");
+                    $('#disband-lobby').removeClass("hidden");
+                });
+
+                socket.on('privelege-update', function(data){
+                    var userID = data.userID;
+                    var level = data.level;
+
+                    if(level == 0) {
+                        $('#user_' + userID + ' .rank i').remove();
+                    } else {
+                        $('#user_' + userID + ' .rank').append('<i class="fa fa-star"></i>');
+                    }
+                });
+
+                
+                socket.on('updated-host', function(data){
+                    var newHost = data.newHost;
+                    var oldHost = data.oldHost;
+
+                    var hostName = $('#user_' + newHost + ' .rank a').text();
+
+                    $('#host').text(hostName);
+
+                    $('#user_' + oldHost + ' .rank i').remove();
+                    $('#user_' + newHost + ' .rank i').remove();
+                    $('#user_' + newHost + ' .rank').append('<i class="fa fa-star host"></i>');
+                });
+
+                socket.on("name-not-set", function(data){
+                    showAlert('error',data, 5000);
+                });
+
+                socket.on("cancel-find-match", function(data){
+                    $('#find-match').html('<button class="btn btn-success">Find Match</button>');
+                    $('#find-match').attr("onclick", 'findMatch();');
+                    $('#finding-match').addClass('hidden');
+                });
+
+                socket.on('finding-match', function(data){
+                    $('#find-match').html('<button class="btn btn-default">Cancel <i class="fa fa-times"></i></button>');
+                    $('#find-match').attr("onclick", 'cancel();');
+                    $('#finding-match').removeClass('hidden');
+                });
+
+                socket.on("player-left", function(data){
+                    var userID = data.userID;
+                    $('#user_' + userID).remove();
+                });
+
+                socket.on('kicked-player', function(data){
+                    var userID = data.user;
+                    $('#user_' + userID).remove();
+                });
+
+                socket.on('kicked', function(){
+                    window.location = '/';
+                });
+
+                socket.on('chat-msg', function(data){
+                    var message = data.message;
+                    var username = data.username;
+                    var userID = data.userID;
+                    var avatarURL = data.avatarURL;
+
+                    if(isSounds) {
+                        chatSound.play();
+                    }
+
+                    $('#chat-messages').append('<li><div onclick="userProfile(\''+username+'\')" class="chat-avatar" style="background-image: url('+avatarURL+')"></div><b>' + username + '</b> ' + message + '</li>');
+
+                    var chat = $('.chat-container');
+                    var height = chat[0].scrollHeight;
+                    chat.animate({
+                        scrollTop: height
+                    }, 300, 'swing');
+                });
+                
+                socket.on('player-joined-lobby', function(data){
+                    var userID = data.userID;
+                    var username = data.username;
+                    var avatarURL = data.avatarURL;
+                    var LDR = data.LDR;
+                    var rank = data.rank;
+                    var bet = data.bet;
+                    var host = data.host;
+                    var hidden1 = "hidden";
+                    var hidden2 = 'hidden';
+                    var myLevel = $('.col-lg-7.lobby').attr('level');
+                    myLevel = parseInt(myLevel);
+
+                    if(myLevel == 1) {
+                        hidden1 = '';
+                        hidden2 = '';
+                    } else if(myLevel == 2) {
+                        hidden2 = '';
+                    }
+
+                    $('#queuelist').append("<tr id='user_"+userID+"' class='queue-player'><td class='rank'><img src='/img/ranks/"+rank+".png'/><div class='lobby-avatar' style='background-image: url("+avatarURL+")'></div><a href='/user/"+username+"'>"+ username +" &nbsp;</a></td><td class='lp_bet'><img src='/img/League%20Points.png'/><span id='lp_bet'>" + bet + "</span></td><td>" + LDR + "</td><td class='options-container'><a class='player-options "+hidden2+" dropdown-toggle' data-toggle='dropdown' href='#'><i class='fa fa-cogs'></i></a><ul class='player-options-list dropdown-menu'><li class='"+hidden2+"'><a onclick='kick(" + userID + ");'>Kick Player</a></li><li class='"+hidden1+"' ><a onclick='changePriveleges("+userID+", 1);'>Promote to Host</a></li><li class='"+hidden1+"'><a onclick='changePriveleges("+userID+", 2);'>Promote to Co-Host</a></li><li class='"+hidden1+"'><a onclick='changePriveleges("+userID+", 0);'>Demote</a></li></ul></td></tr>");
+
+                    $(".dropdown-toggle").dropdown();
+                });
+
+                function userProfile(username) {
+                    var link = '/user/' + username;
+                    window.location = link;
+                }
+
+                function disband() {
+                    var link = '/disband_lobby';
+                    $.get(link, function(data){
+                        console.log(data);
+                        if(data.status == 'success') {
+                            window.location = '/';
+                        } else {
+                            showAlert('success',data.message, 5000);
+                        }
+                    });
+                }
+
+                function cancel() {
+                    var link = '/lobby_cancel_find_match';
+                    $.get(link, function(data){
+                        if(data.status == "error") {
+                            showAlert('error',data.message, 5000);
+                        }
+                    });
+                }
+
+                function findMatch() {
+                    var link = '/lobby_find_match';
+                    $.get(link, function(data){
+                        if(data.status == "error") {
+                            showAlert("error",data.message, 5000);
+                        }
+                    });
+                }
+
+                function changePriveleges(userID, level) {
+                    var link = '/change_priveleges?userID=' + userID + '&level=' + level;
+                    $.get(link, function(data){
+                        showAlert(data.status,data.message, 5000);
+                    });
+                }
+
+                function kick(userID) {
+                    var link = '/kick_player?lobbyID=<%= lobbyID %>&kickedUserID=' + userID;
+                    $.get(link, function(data){
+                        showAlert(data.status,data.message, 5000);
+                    });
+                }
+            </script>
+    </body>
+    
+</html>

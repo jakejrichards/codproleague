@@ -1,0 +1,383 @@
+<% include ./includes/header %>
+
+            <div class="container prematch mapvote" style="padding-top: 0">
+            <% include ./includes/alert-top %>
+                <h2 style="margin-top: 1.5rem"><img height="50" width="50" src="/img/<%= system %>.png"> COD 4: League Match #<%= matchID %></h2>
+                <hr>
+                <div class="row teams">
+                    <div class="col-lg-6 green">
+                        <div class="team-top-container">
+                            <div class="col-lg-4 team-name">
+                                <h2>Green Team</h2>
+                            </div>
+                            <div class="col-lg-3 col-lg-offset-5 team-name">
+                                <h3><img src="/img/League%20Points.png"><span id="greenBet"><%= greenBet %></span></h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 team">
+                            <% players.forEach(function(player){ %>
+                            <% if(player.team === "green") { %>
+                                <div class="player <%= player.rank %>">
+                                    <% if(player.userID != user.userID && friends.indexOf(player.userID) == -1) { %>
+                                    <a class="add-friend" href="/add_friend?userID=<%= player.userID %>"><i class='fa fa-user-plus'></i></a>
+                                    <a class="report-user" userID="<%= player.userID %>" username="<%= player.username %>"><i class='fa fa-flag'></i></a>
+                                    <% } %>
+                                    <div class="avatar" style="background-image: url('<%= player.avatarURL %>'); background-size: cover; background-position: center center;" onclick="userProfile('/user/<%= player.username %>');">
+                                        <div class="rank"><% 
+                                        if(parseInt(player.rank.substr(-1)) === 5) { 
+                                        %>V<% 
+                                        } else if(parseInt(player.rank.substr(-1)) === 4) { 
+                                        %>IV<%
+                                        } else if(parseInt(player.rank.substr(-1)) === 3) { 
+                                        %>III<% 
+                                        } else if(parseInt(player.rank.substr(-1)) === 2) { 
+                                        %>II<% 
+                                        } else { 
+                                        %>I<%
+                                        } %></div>
+                                    </div>
+                                    <p class="username"><%= player.username %></p>
+                                    <p class="lpbet"><img src="/img/League%20Points.png"><span id="uid<%= player.userID %>" class="bets"><%= player.bet %></span></p>
+                                    <p class="psn-name"><img src="/img/<%= system %>.png"><span id="psn"><%= player.system_name %></span></p>
+                                </div>
+                            <% } %>
+                            <% }); %>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 black">
+                        <div class="team-top-container">
+                            <div class="col-lg-4 team-name">
+                                <h2>Black Team</h2>
+                            </div>
+                            <div class="col-lg-3 col-lg-offset-5 team-name">
+                                <h3><img src="/img/League%20Points.png"><span id="blackBet"><%= blackBet %></span></h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 team">
+                            <% players.forEach(function(player){ %>
+                                <% if(player.team === "black") { %>
+                                    <div class="player r<%= player.rank.substr(-1); %> <%= player.rank %>">
+                                        <% if(player.userID != user.userID) { %>
+                                        <a class="add-friend" href="/add_friend?userID=<%= player.userID %>"><i class='fa fa-user-plus'></i></a>
+                                        <a class="report-user" userID="<%= player.userID %>" username="<%= player.username %>"><i class='fa fa-flag'></i></a>
+                                        <% } %>
+                                        <div class="avatar" style="background-image: url('<%= player.avatarURL %>'); background-size: cover; background-position: center center;" onclick="userProfile('/user/<%= player.username %>');">
+                                            <span class="rank"><% 
+                                            if(parseInt(player.rank.substr(-1)) === 5) { 
+                                            %>V<% 
+                                            } else if(parseInt(player.rank.substr(-1)) === 4) { 
+                                            %>IV<%
+                                            } else if(parseInt(player.rank.substr(-1)) === 3) { 
+                                            %>III<% 
+                                            } else if(parseInt(player.rank.substr(-1)) === 2) { 
+                                            %>II<% 
+                                            } else { 
+                                            %>I<%
+                                            } %></span>
+                                        </div>
+                                        <p class="username"><%= player.username %></p>
+                                        <p class="lpbet"><img src="/img/League%20Points.png"><span id="uid<%= player.userID %>" class="bets"><%= player.bet %></span></p>
+                                        <p class="psn-name"><img src="/img/<%= system %>.png"><span id="psn"><%= player.system_name %></span></p>
+                                    </div>
+                                <% } %>
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-5 team">
+                        <h3>You are on the</h3>
+                        <h1><span class="<%= team %>"><i class="fa fa-superpowers"></i><span id="team"><%= team %></span> team</span></h1>
+                    </div>
+                    <div class="col-lg-3 team">
+                        <h3>Total Prize Pool <i class="fa fa-question-circle"></i></h3>
+                        <h1><img src="/img/League%20Points.png"> <%= (greenBet + blackBet) %></h1>
+                    </div>
+                    <div class="col-lg-4 timer matchtime">
+                        <% if(finished) { %>
+                            <h3>Match Ended</h3>
+                            <h1><% var d = new Date(startTime); %></h1>
+                            <% if(winner == 'green') { %>
+                                <h3>Winner: <span class="green-color"><%= winner %> team</span></h3>
+                            <% } else if(winner == 'black') { %>
+                                <h3>Winner: <span style="color: #000"><%= winner %> team</span></h3>
+                            <% } else { %>
+                                <br>
+                                <h3>Match Disputed</h3>
+                            <% } %>
+                            
+                        <% } else { %>
+                            <h3>Match Started</h3>
+                            <h1><% var d = new Date(startTime); %></h1>
+                            <h3>Status: <span class="match-status"><% if(!reported) { %>In Progress<% } else { %>Awaiting reports<% } %></span></h3>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div class="row prematch-bottom">
+                    <div class="col-lg-5">
+                        <div class="box gm match-settings">
+                            <% var mapString = map.replace(/ /g, "_"); %>
+                            <div class="map-img" style="background-image: url('/img/<%= mapString %>.png');">
+                                <p class="map-title"><%= map %></p>
+                                <p>on</p>
+                                <p class='gamemode'>
+                                <% if(gamemode === 'hp') { %><i class="fa fa-map-marker"></i> Hardpoint<% }%>
+                                <% if(gamemode === 'ctf') { %><i class="fa fa-flag"></i> Capture the Flag<% }%>
+                                <% if(gamemode === 'snd') { %><i class="fa fa-bomb"></i> Search & Destroy<% }%>
+                                </p>
+                            </div>
+                            <h3><a href="/rules">CPL Variant v1.0 Settings &nbsp;<i class="fa fa-file-text"></i></a></h3>
+                        </div>
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="box match">
+                            <h3 class="currentBet">Share of team total: <span id="share"><% if(team == "green") { %><%= (((user.bet)/greenBet)*100).toFixed(2) %><% } else { %><%= (((user.bet)/blackBet)*100).toFixed(2) %><% } %></span><b>%</b></h3>
+                            <br/><br/>
+                            <h3>Match Settings: <a href="/rules"><b>CPL Variant v1.0 - <% if(gamemode === 'hp') { %><i class="fa fa-map-marker"></i> Hardpoint<% }%>
+                                <% if(gamemode === 'ctf') { %><i class="fa fa-flag"></i> Capture the Flag<% }%>
+                                <% if(gamemode === 'snd') { %><i class="fa fa-bomb"></i> Search & Destroy<% }%></b></a></h3>
+                            <h3>Host: <img src="/img/psn.svg"> <b><%= host %></b></h3>
+                            <h3><br></h3>
+                            <% if(!reported) { %>
+                            <h3 id="report-results">Report Results</h3>
+                            <% } else { %>
+                            <h3 id="report-results">You have reported a <%= report %></h3>
+                            <% } %>
+                            <div class="modal confirm-modal" id="confirmReportWin">
+                                <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Are you sure?</h4>
+                                  </div>
+                                  <div class="modal-body">
+                                    By reporting a win you acknowledge that a false report may result in an indefinite ban. Users understand that all reports are final and will not be changed unless a dispute ticket is reported. Please see our <a href="/terms">Terms and Conditions</a> for more information on reporting a match.
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-default modal-close" data-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-success report-win">Report Win</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="modal confirm-modal" id="confirmReportLoss">
+                                <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Are you sure?</h4>
+                                  </div>
+                                  <div class="modal-body">
+                                    By reporting a loss you acknowledge that a false report may result in an indefinite ban. Users understand that all reports are final and will not be changed unless a dispute ticket is reported. Please see our <a href="/terms">Terms and Conditions</a> for more information on reporting a match.
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-default modal-close" data-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-danger report-loss">Report Loss</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="modal confirm-modal" id="report-user">
+                                <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Report <span class="reported_username">User</span></h4>
+                                  </div>
+                                  <div class="modal-body">
+                                    <label>Reason:</label>
+                                    <select id="report-type" name="type" class="form-control">
+                                          <option value="Boosting">Boosting</option>
+                                          <option value="False Disputing">False Disputing</option>
+                                          <option value="Smurfing">Smurfing</option>
+                                          <option value="Cheating">Cheating</option>
+                                          <option value="Verbal Abuse">Verbal Abuse</option>
+                                          <option value="Other">Other</option>
+                                    </select>
+                                    <br/>
+                                    <label>More Details: </label>
+                                    <textarea id="message" name="message" rows="3" class="form-control" placeholder="Please give us more details about why you are reporting this user."></textarea>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-default modal-close" data-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-danger report-user-confirm confirm-report">Report <span class="reported_username"></span></button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <% if(!reported) { %>
+                                <div class="col-lg-6 left-report"><button class="report win">Win</button></div>
+                                <div class="col-lg-6 right-report"><button class="report loss">Loss</button></div>
+                                <div id="dispute-proof" style="padding: 0 30px" class='col-lg-12 hidden'><a href="/dispute?matchID=<%= matchID %>"><button class="report">Submit Dispute Proof</button></a></div>
+                            <% } else { %>
+                                <div class="col-lg-6 left-report hidden"><button class="report win">Win</button></div>
+                                <div class="col-lg-6 right-report hidden"><button class="report loss">Loss</button></div>
+                                <div id="dispute-proof" style="padding: 0 30px" class='col-lg-12'><a href="/dispute?matchID=<%= matchID %>"><button class="report">Submit Dispute Proof</button></a></div>
+                            <% } %>
+                            
+                            
+                            <a href="/terms#bets" class="finalBet">All bets are final <i class="fa fa-question-circle"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <form id="start" method='get' action=""></form>
+                <div class="row">
+                    <div class='col-lg-12'>
+                    <div class="box promo"></div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="footer">
+                
+            </div>
+            <% include ./includes/javascriptlinks %>
+            <script src="/js/main.js" type="text/javascript"></script>
+            <script type='text/javascript'>
+            var matchID = <%= matchID %>;
+            var timestamp = <%= startTime*1000 %>;
+            var currentUserID = <%= user.userID %>;
+            timestamp = new Date(timestamp);
+            var pm = false;
+            var timeStr = (timestamp.getMonth() + 1) + "/" + timestamp.getDate() + "/" + timestamp.getFullYear();
+            var hours = timestamp.getHours();
+            var minutes = timestamp.getMinutes();
+            var minutesStr = "";
+            var notificationSound = new Audio('../audio/notificationSound.wav');
+            var chatSound = new Audio('../audio/chatSound.wav');
+            var errorSound = new Audio('../audio/error.wav');
+            var loseSound = new Audio('../audio/lose.wav');
+            var winSound = new Audio('../audio/win.wav');
+
+            $('#confirmReportWin').modal({
+                show: false
+            });
+
+            $('#confirmReportLoss').modal({
+                show: false
+            });
+
+            $('#report-user').modal({
+                show: false
+            });
+
+            $('.report-user').click(function(){
+                var userID = $(this).attr('userID');
+                if(parseInt(currentUserID) != parseInt(userID)) {
+                    var username = $(this).attr('username');
+                    $('.reported_username').html(username);
+                    $('#report-user').attr('userID', userID);
+                    $('#report-user').modal('toggle');
+                }
+            });
+
+            $('.confirm-report').click(function(){
+                var reportType = $('#report-type').val();
+                var message = $('#message').val();
+                var userID = $('#report-user').attr('userID');
+                $.post('/report_user', {
+                    type: reportType,
+                    message: message,
+                    userID: userID
+                }, function(data){
+                    if(data.status == "success") {
+                        showAlert(data.status, data.message, 5000);
+                    } else {
+                        showAlert(data.status, data.message, 5000);
+                    }
+                });
+                $('#report-user').modal('toggle');
+            });
+
+            if(hours > 12) {
+                hours -= 12;
+                pm = true;
+            }
+            if(hours === 0){
+                hours = 12;
+            }
+
+            if(minutes < 10){
+                minutesStr = "0" + minutes;
+            } else {
+                minutesStr = minutes;
+            }
+
+            timeStr += " " + hours + ":" + minutesStr;
+            if(pm){
+                timeStr += " PM";
+            } else {
+                timeStr += " AM";
+            }
+            $('.timer.matchtime h1').html(timeStr);
+
+
+            $('.report.win').click(function(){
+                if(!$(this).hasClass('reported')) {
+                    $('#confirmReportWin').modal('toggle');
+                }
+            });
+
+            $('.report-win').click(function(){
+                $.post('/report', {
+                    matchID: matchID, 
+                    result: "win"
+                }).done(function(data){
+                    if(data.status === "success") {
+                        if(isSounds) {
+                            winSound.play();
+                        }
+                        $('#confirmReportWin').modal('toggle');
+                        $('.left-report').addClass('hidden');
+                        $('.right-report').addClass('hidden');
+                        $('#dispute-proof').removeClass('hidden');
+                        $('.match-status').html("Awaiting reports");
+                        $('#report-results').text("You have reported a win");
+                    } else {
+                        $('#confirmReportWin').modal('toggle');
+                        showAlert(data.status, data.message, 5000);
+                    }
+                });
+            });
+
+
+            $('.report.loss').click(function(){
+                if(!$(this).hasClass('reported')) {
+                    $('#confirmReportLoss').modal('toggle');
+                }
+            });
+
+            $('.report-loss').click(function(){
+                $.post('/report', {
+                    matchID: matchID, 
+                    result: "loss"
+                }).done(function(data){
+                    if(data.status === "success") {
+                        if(isSounds) {
+                            loseSound.play();
+                        }
+                        $('#confirmReportLoss').modal('toggle');
+                        $('.left-report').addClass('hidden');
+                        $('.right-report').addClass('hidden');
+                        $('#dispute-proof').removeClass('hidden');
+                        $('.match-status').html("Awaiting reports");
+                        $('#report-results').text("You have reported a loss");
+                    } else {
+                        showAlert(data.status, data.message, 5000);
+                        $('#confirmReportLoss').modal('toggle');
+                    }
+                });
+            });
+
+            function userProfile(profileLink){
+                window.location = profileLink;
+            }
+            </script>
+
+
+    </body>
+    
+</html>

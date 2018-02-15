@@ -1,0 +1,165 @@
+<% include ./includes/header %>
+<% var time = new Date(); %>
+            <div class="container matchmaking">
+                <div class="row queue-container">
+                    <div class="col-lg-10 col-lg-offset-1">
+                        <h1><img height="75" width="75" src="/img/<%= system %>.png"/> Matchmaking Queue</h1>
+                        <div class="left-queue">
+                            <button class="btn leave">Leave Matchmaking</button>
+                            <p><i class="fa fa-user"></i> <span id="numqueue"><%= queue.length %></span> users in queue</p>
+                        </div>
+                        
+                        <div class="change-bet">
+                            <img src="/img/League%20Points.png"/>
+                            <input id="changeBet" type="text" value="<%= user.bet %>"/>
+                            <button class="btn btn-primary" id="changeBetBtn">Change Bet</button>
+                        </div>
+                        
+                        <table class="table" id='queuelist'>
+                        <tr id="queue-header">
+                            <th>Player</th>
+                            <th>Bet</th>
+                            <th>Ladder Points</th>
+                            <th>Time in Queue</th>
+                        </tr>
+                        <% if(queue.length > 0){ %>
+                        <% queue.forEach(function(Quser){ %>
+                        <tr id='user_<%= Quser.userID %>' class="<% if(Quser.userID == user.userID) { %>currentUser<% } %> queue-player">
+                        <td class="rank"><img src="/img/ranks/<%= Quser.rank %>.png"/>
+                            <% if(Quser.userID == user.userID) { %><%= user.username %><% } else { %>Matched Player<% } %>
+                        </td>
+                        <td class="lp_bet"><img src="/img/League%20Points.png"/><span id="lp_bet"><%= Quser.bet %></span></td>
+                        <td><%= Quser.LDR %></td>
+                        <% 
+                        var total = Math.floor((time - Quser.join_time)/1000);
+                        var minutes = Math.floor(total/60);
+                        var seconds = total % 60;
+                        if(seconds < 10) {
+                            seconds = '0' + seconds;
+                        }
+                        %> 
+                        <td class="time">
+                            <span class='minutes'><%= minutes %></span>:<span class="seconds"><%= seconds %></span>
+                        </td>
+                        </tr>
+                        <% }); %>
+                        <% } %>
+                        </table>
+                        <form id="leavemm" method="POST" action="/leave_matchmaking"></form>
+                        <form id="preMatchForm" method="POST" action="/pre_"></form>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2 bottom-promo-box box">
+                    </div>
+                </div>
+            </div>
+        
+            <div class="footer">
+                
+            </div>
+            <% include ./includes/javascriptlinks %>
+            <script src="js/main.js" type="text/javascript"></script>
+            <script type='text/javascript'>
+
+            socket.on('message', function(message){
+                console.log(message);
+            });
+
+            socket.on('enter', function(user){
+                console.log(user);
+                /*var time = new Date();
+                var total = Math.floor((time - new Date(user.join_time))/1000);
+                var minutes = Math.floor(total/60);
+                var seconds = total % 60;
+                if(seconds < 10) {
+                    seconds = '0' + seconds;
+                }*/
+                $("<tr class='queue-player' id='user_" + user.userID + "'><td class='rank'><img src='/img/ranks/"+user.rank+".png'/> Matched Player</td><td class='lp_bet'><span id='lp_bet'><img src='/img/League%20Points.png'/>" + user.bet + "</span></td><td>" + user.LDR + "</td><td class='time'><span class='minutes'>0</span>:<span class='seconds'>00</span></td></tr>").insertAfter('#queue-header');
+                updateQueueCount();
+            });
+
+            socket.on('leave', function(data){
+                var userID = data.userID;
+                if($('#user_'+userID) !== undefined) {
+                    $('#user_'+userID).remove();
+                }
+                updateQueueCount();
+            });
+
+            socket.on('exit', function(data){
+                var players = data.slice();
+                console.log(players);
+
+                players.forEach(function(player){
+                    console.log(player.userID);
+                    $('#user_'+player.userID).remove();
+                });
+                
+                updateQueueCount();
+            });
+
+            socket.on("match-found", function(data){
+                if(isSounds) {
+                    notificationSound.play();
+                }
+                window.location = '/prematch/' + data.match;
+            });
+
+            $(document).ready(function(){
+                var sessionUserID = <%= user.userID %>;
+                console.log(sessionUserID);
+
+                $('.leave').click(function(){
+                    $('#leavemm').submit();
+                });
+
+                $("#changeBet").on('keyup', function (e) {
+                    if (e.keyCode == 13) {
+                        $('#changeBetBtn').click();
+                    }
+                });
+
+                $('#changeBetBtn').click(function(){
+                    var bet = Number($('#changeBet').val());
+                    console.log(bet);
+                    if($('#changeBet').val() < 1 || !Number.isInteger(bet)) {
+                        console.log("Bet invalid");
+                    } else {
+                        $.post('/changeBet', {bet: bet}, function(data){
+                            $("#lp_balance").html(data.LP);
+                            $("#user_" + data.userID).children().children('#lp_bet').html(data.bet);
+                        });
+                    } 
+                });
+
+                setInterval(function(){
+                    $('.seconds').each(function(){
+                        var secs = parseInt($(this).html());
+                        secs++;
+                        if(secs > 59) {
+                            var minutes = parseInt($(this).siblings(".minutes").html());
+                            minutes++;
+                            $(this).siblings(".minutes").html(minutes);
+                            secs = 0;
+                        }
+                        if(secs < 10) {
+                            $(this).html("0"+secs);
+                        } else {
+                            $(this).html(secs);
+                        }
+                    });
+                }, 1000);
+            });
+
+            function updateQueueCount() {
+                var usersOnline = $('.queue-player').length;
+                console.log(usersOnline);
+                $('#numqueue').html(usersOnline);
+            }
+            </script>
+
+
+    </body>
+    
+</html>

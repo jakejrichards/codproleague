@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>CPL Admin</title>
+	<link href="/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/css/font-awesome.min.css" rel="stylesheet">
+	<link href="/css/datepicker3.css" rel="stylesheet">
+	<link href="/css/styles.css" rel="stylesheet">
+	
+	<!--Custom Font-->
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+	<!--[if lt IE 9]>
+	<script src="/js/html5shiv./js"></script>
+	<script src="/js/respond.min./js"></script>
+	<![endif]-->
+</head>
+<body>
+	<div id="dispute-modal" class="modal">
+        <div class="modal-dialog" role="document" style="width: inherit;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">dispute</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group dispute-info">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+	<nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#sidebar-collapse"><span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span></button>
+				<a class="navbar-brand" href="#"><span>CPL</span> Admin</a>
+			</div>
+		</div><!-- /.container-fluid -->
+	</nav>
+	<div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
+		<div class="profile-sidebar">
+			<div class="profile-userpic">
+				<img src="http://placehold.it/50/30a5ff/fff" class="img-responsive" alt="">
+			</div>
+			<div class="profile-usertitle">
+				<div class="profile-usertitle-name">Admin</div>
+				<div class="profile-usertitle-status"><span class="indicator label-success"></span>Online</div>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="divider"></div>
+		<ul class="nav menu">
+			<li><a href="/"><em class="fa fa-dashboard">&nbsp;</em> Dashboard</a></li>
+			<li><a href="/users"><em class="fa fa-user">&nbsp;</em> Manage Users</a></li>
+			<li><a href="/support"><em class="fa fa-support">&nbsp;</em> Support Tickets</a></li>
+			<li><a href="/reports"><em class="fa fa-flag">&nbsp;</em> Reports</a></li>
+			<li class="active"><a href="/disputes"><em class="fa fa-clone">&nbsp;</em> Dispute Center</a></li>
+			<li><a href="/logout"><em class="fa fa-power-off">&nbsp;</em> Logout</a></li>
+		</ul>
+	</div><!--/.sidebar-->
+		
+	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li><a href="#">
+					<em class="fa fa-home"></em>
+				</a></li>
+				<li class="active">Disputes</li>
+			</ol>
+		</div><!--/.row-->
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Disputes</h1>
+			</div>
+		</div><!--/.row-->
+
+		<div class="row">
+			<div class="col-lg-12">
+				<table class="table">
+					<tr>
+						<th>Match ID</th>
+						<th>System</th>
+						<th>Gamemode</th>
+						<th>Map</th>
+					</tr>
+					<% disputes.forEach(function(dispute){ %>
+						<tr id="match_<%= dispute.matchID %>" matchID="<%= dispute.matchID %>">
+							<td><%= dispute.matchID %></td>
+							<td><%= dispute.system %></td>
+							<td><%= dispute.gamemode %></td>
+							<td><%= dispute.map %></td>
+							<td>
+								<button matchID="<%= dispute.matchID %>" class="btn btn-primary more">View More</button>
+							</td>
+						</tr>
+					<% }); %>
+				</table>
+			</div>
+		</div>
+	</div>	<!--/.main-->
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script>
+		$(document).ready(function(){
+
+			$('#dispute-modal').modal({
+				show: false
+			});
+
+			$(document).on('click', '#update_winner', function(){
+				var winner = $('input#match_winner').val();
+				var matchID = $('#update_winner').attr('matchID');
+				$.post('/update_winner', {
+					matchID: matchID,
+					winner: winner
+				}, function(data){
+					$('#dispute-modal').modal('toggle');
+					$('#match_' + matchID).remove();
+				});
+			});
+
+			$('.more').click(function(){
+				var matchID = $(this).attr("matchID");
+
+				$('.dispute-info').html('');
+
+				$.post('/dispute_info', {
+					matchID: matchID
+				}, function(data){
+
+					var players = data.players;
+					var disputes = data.proof;
+
+					$('.dispute-info').append('<h2>Match: '+data.info.matchID+' <br/><input style="width: 250px" class="form-control" id="match_winner" type="text" placeholder="green or black"/><button matchID="'+data.info.matchID+'" id="update_winner" class="btn btn-success">Update Winner</button></h2><div class="row"><div id="green-team" style="width: 50%; float: left; padding-left: 15px"><h3>Green Team</h3></div><div id="black-team" style="width: 50%; float: left; padding-left: 15px"><h3>Black Team</h3></div></div>');
+
+					players.forEach(function(player){
+						if(player.team == 'green') {
+							$('#green-team').append('<br/><h4 id="user_'+player.userID+'" >'+player.username+'</h4><p>Reported Result: '+player.report+'</p><h4>Proof:</h4><ul id="proof_'+player.userID+'"></ul>');
+						} else {
+							$('#black-team').append('<br/><h4 id="user_'+player.userID+'" >'+player.username+'</h4><p>Reported Result: '+player.report+'</p><h4>Proof:</h4><ul id="proof_'+player.userID+'"></ul>');
+						}
+					});
+
+					disputes.forEach(function(dispute){
+						console.log(dispute);
+						for(var i = 1; i < 6; i++) {
+							console.log(dispute['proof' + i]);
+							$('#proof_'+dispute.userID).append('<a href="https://'+dispute['proof' + i]+'"><li>'+dispute['proof' + i]+'</li></a>')
+						}
+
+						$('<h4>More Information: </h4><p>'+dispute.more_information+'</p>').insertAfter($('#proof_'+dispute.userID));
+						
+					});
+
+					$('#dispute-modal').modal('toggle');
+				});
+
+			});
+		});
+	</script>
+		
+</body>
+</html>

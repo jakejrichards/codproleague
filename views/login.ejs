@@ -1,0 +1,32 @@
+<% include ./includes/header %>
+            
+            <div class="container signup">
+                <div class="row">
+                    <% include ./includes/alert-top %>
+                    <div class="col-lg-6 col-lg-offset-3">
+                        <h1>Login</h1>
+                        <form class="form" action='/login' method="post">
+                            <input class="form-control" type="text" name='username' placeholder='Username'>
+                            <input class="form-control" type="password" name='password' placeholder="Password">
+                            <button class='col-lg-12 login-btn' type="submit">Submit</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="row bottom">
+                    <a href="/register">Don't have an account?</a>
+                </div>
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2 bottom-promo-box box ">
+                        
+                    </div>
+                </div>
+            </div>
+        
+            <div class="footer">
+                
+            </div>
+            <% include ./includes/javascriptlinks %>
+            <script src="js/main.js" type="text/javascript"></script>
+    </body>
+    
+</html>

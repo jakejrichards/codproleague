@@ -1,0 +1,51 @@
+<% include ./includes/header %>
+            <div class="container content">
+                <div class="row">
+                    <input style="color: #000" id="amount" type="text" name="amount" value="100"/>
+                    <div id="paypal-button"></div>
+                </div>
+            </div>
+        
+            <div class="footer">
+                
+            </div>
+            <% include ./includes/javascriptlinks %>
+            <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+            <script src="js/main.js" type="text/javascript"></script>
+            <script>
+                var CREATE_PAYMENT_URL  = '/paypal/create-payment/';
+                var EXECUTE_PAYMENT_URL = '/paypal/execute-payment';
+
+                paypal.Button.render({
+
+                    env: /*'production', Or */'sandbox',
+
+                    commit: true, // Show a 'Pay Now' button
+
+                    payment: function() {
+                        var amount = $('#amount').val();
+                        return paypal.request.post(CREATE_PAYMENT_URL + amount).then(function(data) {
+                            return data.id;
+                        });
+                    },
+
+                    onAuthorize: function(data) {
+                        return paypal.request.post(EXECUTE_PAYMENT_URL, {
+                            paymentID: data.paymentID,
+                            payerID:   data.payerID
+                        }).then(function(data) {
+                            console.log(data);
+                            var LP = $('#lp_balance').html();
+                            LP = parseInt(LP);
+                            LP += data;
+
+                            $('#lp_balance').html(LP);
+                            console.log("You have successfully purchased LP");
+                        });
+                    }
+
+                }, '#paypal-button');
+            </script>
+    </body>
+    
+</html>

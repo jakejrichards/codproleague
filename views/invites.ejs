@@ -1,0 +1,31 @@
+<% include ./includes/header %>
+            <div class="container">
+                <div class="row">
+                <% include ./includes/alert-top %>
+                    <h1 style="text-align: center;">Invites</h1>
+                    <br>
+                    <div class="col-lg-8">
+                        <div class='box'>
+                            <ul>
+                                <% 
+                                if(invites.length > 0) {
+                                invites.forEach(function(invite){ %>
+                                <li>Invite From <%= invite.from_userID %> to Lobby <%= invite.lobbyID %><a href="/accept_invite?from_userID=<%= invite.from_userID %>&lobbyID=<%= invite.lobbyID %>"><button class="btn btn-success">Accept</button></a></li>
+                                <% })} %>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class='box'>Chat</div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="footer">
+                
+            </div>
+            <% include ./includes/javascriptlinks %>
+            <script src="/js/main.js" type="text/javascript"></script>
+    </body>
+    
+</html>

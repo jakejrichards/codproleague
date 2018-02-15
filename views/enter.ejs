@@ -1,0 +1,102 @@
+<% include ./includes/header %>
+            
+            <div class="container signup">
+                <div class="row">
+                <% include ./includes/alert-top %>
+                    <div class="col-lg-8 col-lg-offset-2 enter">
+                        <h1>Enter Matchmaking</h1>
+                        <div class="col-lg-5 box enter-box">
+                            <img src="/img/ps4ww2.png"/>
+                            <form id="psn" class="form" action='/matchmaking' method="post">
+                                <img src="/img/League%20Points.png"/>
+                                <input class="form-control bet" type="text" name='bet' placeholder='Enter your bet'>
+                                <input type='hidden' name='system' value="psn"/>
+                            </form>
+                            <button type="submit" id="solo-psn" class='col-lg-12 enter'>Play Solo</button>
+                        </div>
+                        <div class="col-lg-5 box enter-box">
+                            <img src="/img/ps4ww2.png"/>
+                            <form id="psn-lobby" class="form" action='/create_lobby' method="post">
+                                <img src="/img/League%20Points.png"/>
+                                <input class="form-control bet" type="text" name='bet' placeholder='Enter your bet'>
+                                <input type='hidden' name='system' value="psn"/>
+                            </form>
+                            <button type="submit" id="lobby-psn" class='col-lg-12 create-lobby'>Create Lobby</button>
+                        </div>
+                        <div class="col-lg-5 box enter-box">
+                            <img src="/img/xboxww2.jpg"/>
+                            <form id="xbox" class="form" action='/matchmaking' method="post">
+                                <img src="/img/League%20Points.png"/>
+                                <input class="form-control bet" type="text" name='bet' placeholder='Enter your bet'>
+                                <input type='hidden' name='system' value="xbox"/>
+                            </form>
+                            <button type="submit" id="solo-xbox" class='col-lg-12 enter'>Play Solo</button>
+                        </div>
+                        <div class="col-lg-5 box enter-box">
+                            <img src="/img/xboxww2.jpg"/>
+                            <form id="xbox-lobby" class="form" action='/create_lobby' method="post">
+                                <img src="/img/League%20Points.png"/>
+                                <input class="form-control bet" type="text" name='bet' placeholder='Enter your bet'>
+                                <input type='hidden' name='system' value="xbox"/>
+                            </form>
+                            <button type="submit" id="lobby-xbox" class='col-lg-12 create-lobby'>Create Lobby</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2 bottom-promo-box box ">
+                        
+                    </div>
+                </div>
+            </div>
+        
+            <div class="footer">
+                
+            </div>
+            <% include ./includes/javascriptlinks %>
+            <script src="js/main.js" type="text/javascript"></script>
+            <script type="text/javascript">
+
+            $(document).ready(function(){
+                $('#solo-psn').click(function(){
+                    var bet = Number($('.bet').val());
+                    if(!Number.isInteger(bet)) {
+                        console.log("Bet invalid");
+                    } else {
+                        $('#psn').submit();
+                    }
+                });
+
+                $('#solo-xbox').click(function(){
+                    var bet = Number($('.bet').val());
+                    if(!Number.isInteger(bet)) {
+                        console.log("Bet invalid");
+                    } else {
+                        $('#xbox').submit();
+                    }
+                });
+
+                $('#lobby-xbox').click(function(){
+                    var bet = Number($('.bet').val());
+                    if(!Number.isInteger(bet)) {
+                        console.log("Bet invalid");
+                    } else {
+                        $('#xbox-lobby').submit();
+                    }
+                });
+
+                $('#lobby-psn').click(function(){
+                    var bet = Number($('.bet').val());
+                    if(!Number.isInteger(bet)) {
+                        console.log("Bet invalid");
+                    } else {
+                        $('#psn-lobby').submit();
+                    }
+                });
+
+            });
+
+            </script>
+    </body>
+    
+</html>

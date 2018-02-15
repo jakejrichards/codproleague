@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>CPL Admin</title>
+	<link href="/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/css/font-awesome.min.css" rel="stylesheet">
+	<link href="/css/datepicker3.css" rel="stylesheet">
+	<link href="/css/styles.css" rel="stylesheet">
+	
+	<!--Custom Font-->
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+	<!--[if lt IE 9]>
+	<script src="/js/html5shiv./js"></script>
+	<script src="/js/respond.min./js"></script>
+	<![endif]-->
+</head>
+<body>
+
+	<div id="user-modal" class="modal">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">User <span class="username"></span></h4>
+          </div>
+          <div class="modal-body">
+            <h2 class='username'></h2>
+            <img height="100" class="avatar"/>
+            <img height="100" class="rank"/>
+            <br>
+            <div class="form-group user-info">
+            	<button userID="" class="btn btn-danger ban">Ban User</button>
+            	<select id="banTime">
+            		<option value="day">1 Day</option>
+            		<option value="week">1 Week</option>
+            		<option value="month">1 Month</option>
+            		<option value="indefinite">Indefinitely</option>
+            	</select>
+            	<button style="float: right" userID="" class="btn btn-success unban">Unban User</button>
+            	<br>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+	<nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#sidebar-collapse"><span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span></button>
+				<a class="navbar-brand" href="#"><span>CPL</span> Admin</a>
+			</div>
+		</div><!-- /.container-fluid -->
+	</nav>
+	<div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
+		<div class="profile-sidebar">
+			<div class="profile-userpic">
+				<img src="http://placehold.it/50/30a5ff/fff" class="img-responsive" alt="">
+			</div>
+			<div class="profile-usertitle">
+				<div class="profile-usertitle-name">Admin</div>
+				<div class="profile-usertitle-status"><span class="indicator label-success"></span>Online</div>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="divider"></div>
+		<ul class="nav menu">
+			<li><a href="/"><em class="fa fa-dashboard">&nbsp;</em> Dashboard</a></li>
+			<li class="active"><a href="/users"><em class="fa fa-user">&nbsp;</em> Manage Users</a></li>
+			<li><a href="/support"><em class="fa fa-support">&nbsp;</em> Support Tickets</a></li>
+			<li><a href="/reports"><em class="fa fa-flag">&nbsp;</em> Reports</a></li>
+			<li><a href="/disputes"><em class="fa fa-clone">&nbsp;</em> Dispute Center</a></li>
+			<li><a href="/logout"><em class="fa fa-power-off">&nbsp;</em> Logout</a></li>
+		</ul>
+	</div><!--/.sidebar-->
+		
+	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li><a href="#">
+					<em class="fa fa-home"></em>
+				</a></li>
+				<li class="active">Users</li>
+			</ol>
+		</div><!--/.row-->
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Manage Users</h1>
+			</div>
+		</div><!--/.row-->
+		
+		<div class="panel panel-container">
+			<div class="row">
+				<div class="col-lg-3">
+					<div class="form-group">
+						<input id="input" type="text" class="form-control" placeholder="Search">
+						<select id="type" class="form-control" name="type">
+							<option value="userID">userID</option>
+							<option value="username">username</option>
+							<option value="email">email</option>
+						</select>
+						<button class="form-control btn btn-success" id="search">Search</button>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12">
+					<table class="table table-hover">
+						<tr>
+							<th>User ID</th>
+							<th>Username</th>
+							<th>Email Address</th>
+							<th>Xbox Gamertag</th>
+							<th>PSN</th>
+						</tr>
+						<% users.forEach(function(user){ %>
+							<tr onclick="openUser(<%= user.userID %>)" class="user" userID="<%= user.userID %>" username="<%= user.username %>" email="<%= user.email %>">
+								<td><%= user.userID %></td>
+								<td><%= user.username %></td>
+								<td><%= user.email %></td>
+								<td><%= user.gamertag %></td>
+								<td><%= user.psn %></td>
+							</tr>
+						<% }); %>
+					</table>
+				</div>
+			</div><!--/.row-->
+		</div>
+	</div>	<!--/.main-->
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script>
+		$(document).ready(function(){
+
+			$(document).on('click', '.update', function(){
+				var userID = $(this).attr("userID");
+				var column = $(this).attr('key');
+				var $dataInput = $(this).prev();
+				var data = $dataInput.val();
+
+				updateUser(userID, column, data);
+			});
+
+			$('#user-modal').modal({
+				show: false
+			});
+
+			$('button.unban').click(function(){
+				var userID = $(this).attr('userID');
+
+				unbanUser(userID);
+			});
+
+			$('button.ban').click(function(){
+				var userID = $(this).attr('userID');
+				var banTime = $('#banTime').val();
+
+				banUser(userID, banTime);
+			});
+
+
+			$('#search').click(function(e){
+
+				var input = $('#input').val();
+				var type = $('#type').val();
+
+				console.log(input + " " + type);
+
+				if(type == 'userID') {
+					searchID(input);
+				} else if(type == 'username') {
+					searchUsername(input);
+				} else if(type == 'email') {
+					searchEmail(input);
+				}
+
+			});
+		});
+
+		function updateUser(userID, column, data) {
+			$.post("/update_user", {
+				userID: userID,
+				column: column,
+				data: data
+			}, function(obj){
+				console.log(obj);
+			});
+		}
+
+		function unbanUser(userID) {
+			$.post('/unban_user', {
+				userID: userID
+			}, function(data){
+				alert(data);
+			});
+		}
+
+		function banUser(userID, banTime) {
+			console.log('test');
+			$.post('/ban_user', {
+				userID: userID,
+				banTime: banTime
+			}, function(data){
+				alert(data);
+			});
+		}
+
+		function openUser(userID) {
+			$.post('/user_info', {
+				userID: userID
+			}, function(data){
+				console.log(data);
+				if(data.status == 'success') {
+					var user = data.user;
+					$('#user-modal').modal('toggle');
+					$('.username').text(user.username);
+					$('.userID').text(user.userID);
+					$('button.ban').attr('userID', user.userID);
+					$('button.unban').attr('userID', user.userID);
+					$('.avatar').attr('src', user.avatarURL);
+					$('.rank').attr('src', '/img/ranks/' + user.rank + '.png');
+
+					for(var key in user) {
+						if(key != 'password') {
+							$('.user-info').append('<label style="margin-top: 16px">'+key+'</label><br><input class="form-control" name="'+key+'" value="'+user[key]+'" /><button key="'+key+'" userID="'+userID+'" class="btn btn-default update form-control">Update</button>');
+						}
+					}
+				
+				} else {
+					alert(data.message);
+				}
+			});
+		}
+
+		function searchEmail(email) {
+			window.location = '/search?email=' + email;
+		}
+
+		function searchUsername(username) {
+			window.location = '/search?username=' + username;
+		}
+
+		function searchID(userID) {
+			window.location = '/search?userID=' + userID;
+		}
+
+	</script>
+		
+</body>
+</html>
